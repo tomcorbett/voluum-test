@@ -18,17 +18,16 @@
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
-        <!-- Start of tracking JS from Voluum -->
-        <style>.dtpcnt{opacity: 0;}</style>
-        <script>
-            (function(b,a,f,n,c,l,g,h,k,d,m,e){b[c]||(b[c]=function(a){b[c].state.callbackQueue.push(a)},b[c].state={callbackQueue:[]},b[c].registerConversion=function(a){b[c].state.callbackQueue.push(a)},(k=/[?&]cpid(=([^&#]*)|&|#|$)/.exec(b.location.href))&&k[2]&&(d=k[2],m=a.cookie.match(new RegExp("(^| )vl-"+d+"=([^;]+)"))),g=a.createElement("script"),h=a.scripts[0],g.src=l+(-1===l.indexOf("?")?"?":"&")+"oref="+f(a.referrer)+"&ourl="+f(location[n])+"&opt="+f(a.title)+"&t="+(new Date).getTime()+(m?"&uw=no":
-                ""),h.parentNode.insertBefore(g,h),d&&(e=new Date,e.setTime(e.getTime()+864E5),a.cookie="vl-"+d+"=1; expires="+e.toGMTString()+"; path=/"))})(window,document,encodeURIComponent,"href","dtpCallback","https://fingkok-singola.com/d/7c9410cb-7c14-4b5e-9c2e-18ca2c51562c.js");
-        </script>
-        <noscript><link href="https://fingkok-singola.com/d/7c9410cb-7c14-4b5e-9c2e-18ca2c51562c.js?noscript=true&ourl=" rel="stylesheet"/></noscript>
-        <!-- End of tracking JS from Voluum -->
-
         <!-- Custom JS Lib -->
         <script src="./../js/vtracker.js"></script>
+        <script>
+            let vtrackerOptions = {
+                'base_url': 'https://fingkok-singola.com',
+                'campaign_id': '7c9410cb-7c14-4b5e-9c2e-18ca2c51562c',
+                'offer_id': '5d6bb058-56cc-47d9-b6a4-2a457469c939'
+            };
+            let vtrack = new VTracker(vtrackerOptions);
+        </script>
 
     </body>
 </html>

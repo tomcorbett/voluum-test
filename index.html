@@ -13,10 +13,17 @@
     <br />
     <a href="./videos/video2.html">Video 2 (this does not work)</a>
 
-    <!-- perhaps use tracking pixel to track impression / view on main page? Although probably doesn't maintain ClickID -->
-    <img src="https://fingkok-singola.com/impression/7c9410cb-7c14-4b5e-9c2e-18ca2c51562c" width="1" height="1" />
-
-    <!-- WOULD prefer to use tracking JS here to log impression / view (not sure if this is possible?) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- Custom JS Lib -->
+    <script src="./../js/vtracker.js"></script>
+    <script>
+        let vtrackerOptions = {
+            'base_url': 'https://fingkok-singola.com',
+            'campaign_id': '7c9410cb-7c14-4b5e-9c2e-18ca2c51562c',
+            'offer_id': '5d6bb058-56cc-47d9-b6a4-2a457469c939'
+        };
+        let vtrack = new VTracker(vtrackerOptions);
+    </script>
 
 </body>
 </html>
