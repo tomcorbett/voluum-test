@@ -1,7 +1,5 @@
 let VTracker = (function(initOptions) {
 
-    let $ = window.jQuery;
-
     let self = this;
 
     let cookieName = 'vtracker';
@@ -20,23 +18,28 @@ let VTracker = (function(initOptions) {
 
     let calls = {
         updateUrls: function() {
-            links.each(function(){
 
-                let url = new URL(this.href);
+            for(var i = 0; i < links.length; i++) {
+
+                let elem = links[i];
+
+                let url = new URL(elem.href);
 
                 log("Updating link", url);
 
                 url.searchParams.set('cid', tokens.clickId);
-                this.href = url.href;
+                elem.href = url.href;
 
                 // add the click handler (pending - this does nothing for now)
-                $(this).click(calls.registerClick);
-            });
+                // elem.onclick = calls.registerClick;
+            }
         },
         registerClick: function(e) {
             e.stopPropagation();
             log("register click");
             dtpCallback.logConversion('payout'); // don't think this actually does anything
+
+            throw new Error('yeah');
         },
         onLibLoadedCallback: function() {
             let vtokens = dtpCallback.getTokens();
@@ -97,7 +100,7 @@ let VTracker = (function(initOptions) {
     }
 
     function setBindings () {
-        links = $('[data-join-link]');
+        links = document.querySelectorAll('[data-join-link]');
 
         // if there are no links, don't do anything
         if (links.length === 0) {
