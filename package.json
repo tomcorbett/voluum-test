@@ -1,6 +1,6 @@
 {
   "name": "voluum-tracker",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "An simple JS library to help with Voluum direct tracking with a basic HTML example",
   "main": "src/vtracker.js",
   "scripts": {
