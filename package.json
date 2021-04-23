@@ -1,0 +1,22 @@
+{
+  "name": "voluum-tracker",
+  "version": "1.0.0",
+  "description": "An simple JS library to help with Voluum direct tracking with a basic HTML example",
+  "main": "src/vtracker.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tomcorbett/voluum-test.git"
+  },
+  "keywords": [
+    "voluum"
+  ],
+  "author": "Thomas Corbett",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tomcorbett/voluum-test/issues"
+  },
+  "homepage": "https://github.com/tomcorbett/voluum-test#readme"
+}

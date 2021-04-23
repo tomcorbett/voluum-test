@@ -1,25 +1,28 @@
 let VTracker = (function(initOptions) {
 
-    let self = this;
-
     let cookieName = 'vtracker';
 
+    let debug = initOptions.debug || false;
+
     let tokens = {
-        clickId: null,
-        campaignId: null,
-        trafficSource: null
+        clickId: null
     };
 
     let links = [];
 
-    let options = {};
+    // set the root level options based on the passed in params
+    let options = {
+        base_url: initOptions.base_url || null,
+        campaign_id: initOptions.campaign_id || null,
+        offer_id: initOptions.offer_id || null
+    };
 
     let jsLoaded = false;
 
     let calls = {
         updateUrls: function() {
 
-            for(var i = 0; i < links.length; i++) {
+            for(let i = 0; i < links.length; i++) {
 
                 let elem = links[i];
 
@@ -30,28 +33,57 @@ let VTracker = (function(initOptions) {
                 url.searchParams.set('cid', tokens.clickId);
                 elem.href = url.href;
 
-                // add the click handler (pending - this does nothing for now)
-                // elem.onclick = calls.registerClick;
+                // if it's a join link, add the register click
+                if (elem.hasAttribute('data-join-link')) {
+                    // add the click handler (pending - this does nothing for now)
+                    log("Binding registerClick to join link", elem.href);
+                    elem.onclick = calls.registerClick;
+                }
             }
         },
         registerClick: function(e) {
             e.stopPropagation();
-            log("register click");
-            dtpCallback.logConversion('payout'); // don't think this actually does anything
 
-            throw new Error('yeah');
+            if (jsLoaded) {
+                // dtpCallback.logConversion(); // This logs a conversion, we don't want to do this yet we just want to log a click
+                // dtpCallback.registerClick(); // this doesn't work, although it is in docs (https://doc.voluum.com/en/dtp_customziations.html)
+                log("Click registered [not working currently]");
+            } else {
+                log("Could not register click because library was not loaded yet");
+            }
         },
         onLibLoadedCallback: function() {
-            let vtokens = dtpCallback.getTokens();
 
-            log("Received tokens", vtokens);
+            // as this is a callback, we know here that the lib successfully loaded
+            jsLoaded = true;
 
-            tokens.clickId = vtokens.cid;
-            tokens.campaignId = vtokens.cmp;
-            tokens.trafficSource = vtokens.traffic_source;
+            // check the cookie, do we already have the tracking info?
+            let cookie = getCookie();
 
-            setCookie(tokens);
+            // if we don't already have the cookie set, then we need to call getTokens()
+            if (!cookie || !cookie.hasOwnProperty('clickId') || cookie.clickId === null) {
+                log('clickId not in cookie so checking URL');
 
+                // if the clickId is already in the URL, the dtpCallback.getTokens() will return nothing so just take it from the URL
+                let pageUrl = new URL(window.location.href);
+                if (pageUrl.searchParams.has('cid')) {
+                    tokens.clickId = pageUrl.searchParams.get('cid');
+                    log("ClickID was already in URL so not calling getTokens()", tokens);
+                } else {
+                    let vtokens = dtpCallback.getTokens();
+                    log("Received tokens from getTokens() call:", vtokens);
+                    tokens.clickId = vtokens.cid;
+                }
+
+                setCookie(tokens);
+
+            // if we already have the tokens in the cookie then we don't need to call getTokens()
+            } else {
+                tokens = cookie;
+                log('clickId is already in cookie so do not have to get it', tokens);
+            }
+
+            // now set all the URLs on the page
             calls.updateUrls();
         }
     };
@@ -61,7 +93,7 @@ let VTracker = (function(initOptions) {
         d.setTime(d.getTime() + (30*24*60*60*1000)); // 30 days
         var expires = "expires="+ d.toUTCString();
         document.cookie = cookieName + "=" + JSON.stringify(tokens) + ";" + expires + ";path=/";
-        log("setCookie", document.cookie);
+        log("setting cookie:", document.cookie);
     }
 
     function getCookie() {
@@ -82,6 +114,10 @@ let VTracker = (function(initOptions) {
 
     function log(msg, obj) {
 
+        if (!debug) {
+            return;
+        }
+
         if (typeof obj === "undefined" || !obj) {
             console.log("[VTracker] " + msg);
         } else {
@@ -95,12 +131,13 @@ let VTracker = (function(initOptions) {
 
         log('JS Loaded');
 
-        // set flag so we can check later if we've loaded the JS or not
-        jsLoaded = true;
+        dtpCallback(calls.onLibLoadedCallback); // tokens set, cookie updated and URLs get updated in this callback
     }
 
     function setBindings () {
-        links = document.querySelectorAll('[data-join-link]');
+
+        // bind to all links
+        links = document.getElementsByTagName('a');
 
         // if there are no links, don't do anything
         if (links.length === 0) {
@@ -112,55 +149,33 @@ let VTracker = (function(initOptions) {
     function init() {
 
         // first check the necessary params are set in the page already
-        if (!initOptions.hasOwnProperty('base_url')) {
+        if (!options.base_url) {
             log('No base_url provided');
             return false;
         }
-        if (!initOptions.hasOwnProperty('campaign_id')) {
+        if (!options.campaign_id) {
             log('No campaign_id provided');
             return false;
         }
-        if (!initOptions.hasOwnProperty('offer_id')) {
+        if (!options.offer_id) {
             log('No offer_id provided');
             return false;
         }
-
-        // set the root level options based on the passed in params now they're "validated"
-        options = {
-            base_url: initOptions.base_url,
-            campaign_id: initOptions.campaign_id,
-            offer_id: initOptions.offer_id
-        };
 
         log("initialized with options", options);
 
         // bind any links
         setBindings();
 
-        // check the cookie, do we already have the tracking info?
-        let cookie = getCookie();
-
-        // check it's valid - if so then we don't need to load the JS
-        // if NO - then load the JS if we don't already have the stuff in the cookie
-        if (!cookie.hasOwnProperty('clickId')) {
-            log('Loading JS because cookie tokens are not set');
-            loadJS();
-            log('dtpCallback', dtpCallback);
-            dtpCallback(calls.onLibLoadedCallback); // tokens set, cookie updated and URLs get updated in this callback
-        } else {
-            log('Not loading JS because cookie tokens are already set: ', cookie);
-            tokens = cookie;
-            // now set all the URLs on the page
-            calls.updateUrls();
-        }
+        // always load the JS in case we need to log a conversion
+        loadJS();
     }
 
-    init(initOptions);
+    init();
 
     // return public method to enable the page to get the tokens if they want to
     return {
         getTokens: function(){return tokens;}
     };
 });
-
 

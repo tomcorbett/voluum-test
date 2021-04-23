@@ -1,52 +1,44 @@
-# voluum-test
+# Voluum Tracking JS
 
-This is a project to illustrate to Voluum what we are trying to achieve with a real world example.
+This is an example JS library which can be loaded on a page with the necessary params to help with Voluum tracking.
 
+It will manage keeping track of the clickId in a cookie and also append automatically to all URLs on the page so it's not lost. 
 
-# Run Locally
+# Usage
+To use this script, you can simply include the file and pass it the necessary params like below:
+```html
+<script src="src/vtracker.js"></script>
+<script>
+    let vtrackerOptions = {
+        base_url: 'https://fingkok-singola.com', // This is the base URL configured in Voluum, this will change
+        campaign_id: '7c9410cb-7c14-4b5e-9c2e-18ca2c51562c', // The campaignID from Voluum (not the cmpId from the tour, this is different
+        offer_id: '5d6bb058-56cc-47d9-b6a4-2a457469c939', // The offerID from Voluum
+        debug: true // Can be true or false, defaults to false, if true, will log various debug information
+    };
+    // unused right now, there is only one method for vtrack which is getTokens(), this returns the clickId, trafficSource and campaignIf from Voluum (or the cookie)
+    let vtrack = new VTracker(vtrackerOptions);
+</script>
+```
+
+# Run example Locally
 
 ## Run local web server (example with PHP)
 Checkout this code and cd to the new directory and run a local webserver
 ```shell script
-php -S localhost:8078
+php -S 127.0.0.1:8078
 ```
 
 ## Run the test
 Go to the following link in your browser:
-http://localhost:8078/
+http://127.0.0.1:8078/html
 
-This is the main page which will list videos etc. from here there are 2 example links, video 1 and video2.
+This is the main page which will list videos etc. from here there are 2 example links, video 1 and video2. Both are working links.
 
-Video 1 is a working link and loads the tracking JS and it works as expected because there is an offer configured with the URL of http://localhost:8078/videos/video1.html?cid={clickid}&cmp={campaign.id}&traffic_source={trafficsource.id}
+From there, each video page will show a few join links/options to mimic linking to an actual billing system / credit card join form e.g. "trial", "monthly" and "yearly"
 
-Video 2 does not work because the JS does not load, it gets a 400 response because there is no offer configured for this URL. We CANNOT create an offer for every single video page. We have over 12,000 videos, and they are updated all the time.
-
-We need to know how to configure the site as like this example.
-
-## What do we want to be able to do?
-We want to be able to do this:
- - Main Page (log that a user landed on the page - maybe with pixel? But clickId will not be the same if using a pixel...)
- - Video Page - localhost:8078/{video-id}/{video-name}/ (log that the user viewed the "offers")
-   -  onclick of the link to billing system, log custom conversion (i.e. offer-click)
- - Billing Join Page (log the postback and set - aff_payout, revenue, affiliate, custom_campaign, custom_join_type, custom_ad_id)
- 
-Then we want to be able to see everything by these dimensions (affiliate, custom_campaign, custom_join_type, custom_ad_id)
- - Net revenue
- - Visits / unique visits
- - Clicks (i.e. CTA clicks manually logged)
- - Conversions (each type of conversion e.g. maybe CC decline, view offer)
- - Offer Clicked (maybe this is #3 depending on how we have to implement)
- 
-We also would want to be able to see a join flow / funnel with stats for example see the drop off at each step e.g.
- - Load Main Page
- - Load Video Page
- - Click CTA
- - Conversion (sale)
-
-### TLDR
-Essentially, we want to be able to get to the point where we add tracking code to a page and add the JS library to the page which lists the join links and then do the postback at the end with custom params (the postback is not an issue - it's the tracking JS)
- 
-
-## Configuration
-I have NOT configured a lander for this as we talked about on the call.
-I configured a traffic source, a campaign (7c9410cb-7c14-4b5e-9c2e-18ca2c51562c)
+## What is the example of?
+The example illustates one standard use case for using Voluum e.g.:
+ - [html/index.html] Main Page / Video Listing Page (log that a user landed on the page)
+ - [html/videos/video1.html] Video Page - e.g. localhost:8078/html/videos/video1.html (log that the user viewed the various join links e.g. trial, monthly, etc.)
+   -  onclick of the link to credit card join form, log click (PENDING how to do this)
+ - [html/join.html] Credit Card Join Page (In this example, we are assuming that the credit card join form would be a different system i.e. a billing system, here we would do the postback on a successful purchase)

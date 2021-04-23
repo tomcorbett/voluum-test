@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Video 2</title>
+</head>
+    <body>
+
+        <h1>Video 2</h1>
+        <p>This is an example video page.</p>
+
+        <a data-join-link href="../join.html?type=trial">Trial</a>
+        <br />
+        <a data-join-link href="../join.html?type=monthly">Monthly</a>
+        <br />
+        <a data-join-link href="../join.html?type=yearly">Yearly</a>
+
+        <!-- Custom JS Lib -->
+        <script src="../../src/vtracker.js"></script>
+        <script>
+            let vtrackerOptions = {
+                base_url: 'https://fingkok-singola.com',
+                campaign_id: '580fd2d1-5421-4ed2-aab8-9fe45dc8d86e',//'7c9410cb-7c14-4b5e-9c2e-18ca2c51562c',
+                offer_id: 'f4a758ea-ff0d-4e10-a1c5-76b4e700ebc0',//'5d6bb058-56cc-47d9-b6a4-2a457469c939',
+                debug: true
+            };
+            let vtrack = new VTracker(vtrackerOptions);
+        </script>
+
+    </body>
+</html>
