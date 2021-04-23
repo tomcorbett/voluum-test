@@ -6,7 +6,7 @@
 </head>
 <body>
     <h1>Billing Page</h1>
-    <p>This page will contain the credit card join form</p>
+    <p>This page will contain the credit card join form.</p>
 
     <p>
         Your click ID is: <span id="click_id"></span>
@@ -14,6 +14,27 @@
     <p>
         Postback to the following URL to log the conversion: <span id="postback_url"></span>
     </p>
+    <br />
+    <h3>Additional Postback Examples:</h3>
+    <p>It is possible to setup custom conversion events, so for example you might have the following</p>
+    <ul>
+        <li>"join" e.g. user initial signup</li>
+        <li>"upsell" e.g. sale of another product to existing user</li>
+        <li>"cross_sale" e.g. the sale of an add-on product along with the initial join (combined)</li>
+        <li>"rebill" e.g. if the product was a recurring subscription, this happens when the subscription rebills</li>
+        <li>"chargeback" e.g. the credit card used charges back</li>
+        <li>"refund" e.g. a refund happened</li>
+        <li>"affiliate_payout" e.g. if you do custom payouts this is needed because you cannot SET the cost when doing tracking this way</li>
+    </ul>
+    <p><em>Note: the "payout" URL param can be positive or negative, if its something like a refund or chargeback - it would be negative for example.</em></p>
+    <p>To track all of the revenue so the profit is accurate, you can track every single revenue related event, for example using the following postbacks</p>
+    <ol>
+        <li>$29.95 join - <span id="postback_url_join"></span></li>
+        <li>$10 affiliate payout - <span id="postback_url_affiliate_payout"></span></li>
+        <li>$5 partial refund - <span id="postback_url_refund"></span></li>
+        <li>$29.95 rebill - <span id="postback_url_rebill"></span></li>
+    </ol>
+
     <script>
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
@@ -21,7 +42,13 @@
 
         if (clickId) {
             document.getElementById('click_id').innerHTML = clickId;
-            document.getElementById('postback_url').innerHTML = 'https://fingkok-singola.com/postback?cid='+clickId;
+            let postbackURL = 'https://fingkok-singola.com/postback?cid='+clickId+'&et=EVENT_TYPE&txid=USER_ID&payout=REVENUE';
+            document.getElementById('postback_url').innerHTML = postbackURL;
+
+            document.getElementById('postback_url_join').innerHTML = postbackURL.replace('EVENT_TYPE', 'join').replace('REVENUE', '29.95');
+            document.getElementById('postback_url_affiliate_payout').innerHTML = postbackURL.replace('EVENT_TYPE', 'affiliate_payout').replace('REVENUE', '-10');
+            document.getElementById('postback_url_refund').innerHTML = postbackURL.replace('EVENT_TYPE', 'refund').replace('REVENUE', '-5');
+            document.getElementById('postback_url_rebill').innerHTML = postbackURL.replace('EVENT_TYPE', 'rebill').replace('REVENUE', '29.95');
         }
     </script>
 </body>
